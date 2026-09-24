@@ -12,7 +12,13 @@ class Book(models.Model):
 
     pages = models.PositiveIntegerField()
 
-    author = models.CharField(
-        max_length=100,
+    author = models.ManyToManyField(
+        to='Author'
     )
-    
+
+
+class Author(models.Model):
+    name = models.CharField(
+        max_length=100
+    )
+

@@ -15,8 +15,8 @@ from books_api.models import Book
 
 book = Book.objects.create(
     title='shogun',
-    description='Very nice book',  # Fixed typo: 'description'
-    pages=400,                      # Ensure field name matches models.py (e.g., 'page' or 'pages')
+    description='Very nice book',  
+    pages=400,                 
     author='Japanese'
 )
 
