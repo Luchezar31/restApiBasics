@@ -1,14 +1,9 @@
-from functools import partial
-
-from django.db.migrations import serializer
-from django.shortcuts import render
-from rest_framework.views import APIView, Response
-from rest_framework.decorators import api_view
-from rest_framework import status
 from django.shortcuts import get_object_or_404
-from books_api.models import Book
-from books_api.serializers import BookSerializer
-
+from rest_framework import generics
+from rest_framework.views import APIView, Response
+from rest_framework import status, viewsets
+from books_api.models import Book, Publisher
+from books_api.serializers import BookSerializer, PublisherSerializer, HyperLinkSerializer
 
 '''
 @api_view(['GET','POST','PUT','DELETE'])
@@ -49,7 +44,13 @@ class BookDetailApiViewSet(APIView):
         
     def get(self,request,pk=None,*args,**kwargs):
 
-        book = Book.objects.get(pk=pk)
+        try:
+            book = Book.objects.prefetch_related('author').get(pk=pk)
+        except Book.DoesNotExist:
+            return Response(
+                {"detail": "Book not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
         serializer=self.serializer_class(book)
 
@@ -105,8 +106,18 @@ class BookCreateListApiViewSet(APIView):
 
 
     def get(self,request):
-        books = Book.objects.all()
+        books = Book.objects.prefetch_related('author')
 
         serializer =self.serializer_class(books,many=True)
 
         return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+class PublisherViewSet(viewsets.ModelViewSet):
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherSerializer
+
+class PublisherHyperlinkView(generics.ListAPIView):
+    queryset = Publisher.objects.all()
+    serializer_class = HyperLinkSerializer
+

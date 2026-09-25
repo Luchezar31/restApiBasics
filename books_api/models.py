@@ -13,12 +13,30 @@ class Book(models.Model):
     pages = models.PositiveIntegerField()
 
     author = models.ManyToManyField(
-        to='Author'
+        to='Author',
+        blank=True
     )
 
 
 class Author(models.Model):
     name = models.CharField(
+        max_length=100,
+    )
+
+class Publisher(models.Model):
+    name = models.CharField(
         max_length=100
+    )
+    established_year = models.PositiveIntegerField()
+
+    location = models.CharField(
+        max_length=25
+    )
+
+class Review(models.Model):
+    description = models.TextField()
+    book = models.ForeignKey(
+        to=Book,
+        on_delete=models.CASCADE
     )
 
